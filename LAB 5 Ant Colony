@@ -1,0 +1,31 @@
+import numpy as np
+
+# Parameters
+num_ants, num_iter, rho, Q = 2, 5, 100, 5
+dist = np.array([[0, 10, 17, 10], [10, 0, 10, 10], [17, 10, 0, 10], [10, 10, 10, 0]])
+n = len(dist)
+pher = np.ones((n, n))
+
+# Calculate cost of a path
+def cost(path):
+    return np.sum(dist[path, np.roll(path, -1)])
+
+# Update pheromone levels
+def update(pher, sols):
+    for path in sols:
+        pher[path, np.roll(path, -1)] += Q / np.array([cost(path)] * n)
+    pher *= (1 - rho)
+
+# Ant Colony Optimization
+def aco():
+    best_path, best_cost = None, float('inf')
+    for _ in range(num_iter):
+        sols = [np.random.permutation(n) for _ in range(num_ants)]
+        update(pher, sols)
+        for path in sols:
+            c = cost(path)
+            if c < best_cost:
+                best_path, best_cost = path, c
+    return best_path, best_cost
+
+print("Best solution:", *aco())
