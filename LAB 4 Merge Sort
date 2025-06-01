@@ -1,0 +1,46 @@
+from multiprocessing import Pool
+
+# ----------- Merge Function -----------
+def merge(left, right):
+    print(f"Merging: {left} and {right}")
+    result = []
+    while left and right:
+        result.append(left.pop(0) if left[0] < right[0] else right.pop(0))
+    result.extend(left or right)
+    print(f"Merged into: {result}")
+    return result
+
+# ----------- Merge Sort Function -----------
+def merge_sort(arr):
+    print(f"Sorting: {arr}")
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+# ----------- Multiprocessing Wrapper -----------
+def parallel_merge_sort(arr):
+    print(f"Starting parallel sort on: {arr}")
+    mid = len(arr) // 2
+    left, right = arr[:mid], arr[mid:]
+
+    with Pool(2) as pool:
+        sorted_parts = pool.map(merge_sort, [left, right])
+
+    return merge(*sorted_parts)
+
+# ----------- Main Function -----------
+if __name__ == '__main__':
+    user_input = input("Enter numbers separated by commas (e.g., 5,3,8,6): ")
+    try:
+        arr = [int(x.strip()) for x in user_input.split(',')]
+    except ValueError:
+        print("Invalid input. Please enter only integers separated by commas.")
+        exit(1)
+
+    print("Original Array:", arr)
+    sorted_arr = parallel_merge_sort(arr)
+    print("Sorted Array:", sorted_arr)
