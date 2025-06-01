@@ -1,0 +1,53 @@
+import numpy as np
+
+class Perceptron:
+    def __init__(self, input_size):
+        self.weights = np.zeros(input_size)
+        self.bias = 0
+
+    def predict(self, inputs):
+        return np.where(np.dot(inputs, self.weights) + self.bias >= 0, 1, -1)
+
+    def train_hebb(self, inputs, targets):
+        for x, y in zip(inputs, targets):
+            self.weights += y * x
+            self.bias += y
+
+    def train_delta(self, inputs, targets, learning_rate=0.1, epochs=100):
+        for _ in range(epochs):
+            for x, y in zip(inputs, targets):
+                error = y - self.predict(x)
+                self.weights += learning_rate * error * x
+                self.bias += learning_rate * error
+
+# Example Usage
+def main():
+    # Input dataset (OR Gate)
+    inputs = np.array([
+        [0, 0],
+        [0, 1],
+        [1, 0],
+        [1, 1]
+    ])
+
+    # Targets for OR gate
+    targets = np.array([-1, 1, 1, 1])  # Using -1 for 0 and 1 for 1
+
+    # Train with Hebb's Rule
+    perceptron_hebb = Perceptron(input_size=2)
+    perceptron_hebb.train_hebb(inputs, targets)
+    print("Hebb's Rule:")
+    print("Weights:", perceptron_hebb.weights)
+    print("Bias:", perceptron_hebb.bias)
+    print("Predictions:", perceptron_hebb.predict(inputs))
+
+    # Train with Delta Rule
+    perceptron_delta = Perceptron(input_size=2)
+    perceptron_delta.train_delta(inputs, targets, learning_rate=0.1, epochs=10)
+    print("\nDelta Rule:")
+    print("Weights:", perceptron_delta.weights)
+    print("Bias:", perceptron_delta.bias)
+    print("Predictions:", perceptron_delta.predict(inputs))
+
+if __name__ == "__main__":
+    main()
