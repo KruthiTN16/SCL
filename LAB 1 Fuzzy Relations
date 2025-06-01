@@ -1,0 +1,95 @@
+# 1) Fuzzy relations
+import numpy as np
+def min_max_composition(R, S):
+
+    n, m1 = R.shape
+    m2, p = S.shape
+    assert m1 == m2
+
+    result = np.zeros((n, p))
+
+    for i in range(n):
+        for j in range(p):
+            result[i, j] = np.max(np.minimum(R[i, :], S[:, j]))
+
+    return result
+
+def mamdani_implication(a, b):
+    return np.minimum(a, b)
+
+def lukasiewicz_implication(a, b):
+    return np.minimum(1, 1 - a + b)
+
+def godel_implication(a, b):
+    return np.where(a <= b, 1, b)
+
+def fuzzy_inference(R, inputs):
+
+    n, m = R.shape
+    assert m == len(inputs)
+
+    result = np.zeros(n)
+    for i in range(n):
+        result[i] = np.max(np.minimum(R[i, :], inputs))
+
+    return result
+
+
+R = np.array([
+    [0.5, 0.2, 0.7],
+    [0.8, 0.1, 0.3]
+])
+
+S = np.array([
+    [0.6, 0.4],
+    [0.3, 0.9],
+    [0.5, 0.7]
+])
+
+a = np.array([0.2, 0.7, 0.5])
+b = np.array([0.6, 0.4, 0.9])
+inputs = np.array([0.6, 0.4, 0.9])
+
+print("Min-Max Composition:\n", min_max_composition(R, S))
+print("\nMamdani Implication:\n", mamdani_implication(a, b))
+print("\nLukasiewicz Implication:\n", lukasiewicz_implication(a, b))
+print("\nGodel Implication:\n", godel_implication(a, b))
+print("\nFuzzy Inference Output:\n", fuzzy_inference(R, inputs))
+
+
+
+
+import numpy as np
+
+# Fuzzy Relations
+R = {
+    "Low Temp": [0.8, 0.5, 0.3],
+    "Medium Temp": [0.6, 0.7, 0.4],
+    "High Temp": [0.3, 0.6, 0.9]
+}
+
+S = {
+    "Dry": [0.7, 0.4, 0.3],
+    "Normal": [0.5, 0.6, 0.4],
+    "Humid": [0.2, 0.5, 0.8]
+}
+
+temperature_input = "Low Temp"
+humidity_input = "Dry"
+
+mu_R = R[temperature_input]
+mu_S = S[humidity_input]
+
+# Min-Max Composition
+def min_max_composition(mu_R, mu_S):
+    return [min(mu_R[i], mu_S[i]) for i in range(3)]
+
+composed_result = min_max_composition(mu_R, mu_S)
+
+cooling_action = ["Low Cooling", "Medium Cooling", "High Cooling"]
+max_membership_value = max(composed_result)
+action_index = composed_result.index(max_membership_value)
+
+print(f"Input: Temperature = {temperature_input}, Humidity = {humidity_input}")
+print(f"Membership values for Cooling Actions: {composed_result}")
+print(f"The system selects: {cooling_action[action_index]} with a membership value of {max_membership_value:.2f}")
