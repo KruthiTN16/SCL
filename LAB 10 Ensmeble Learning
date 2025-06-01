@@ -1,0 +1,33 @@
+#10) Ensembling
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+clf1 = LogisticRegression(max_iter=200)
+clf2 = GaussianNB()
+clf3 = DecisionTreeClassifier()
+print("Fitting individual models...")
+clf1.fit(X_train, y_train)
+clf2.fit(X_train, y_train)
+clf3.fit(X_train, y_train)
+ensemble = VotingClassifier(estimators=[
+    ('Logistic Regression', clf1),
+    ('Naive Bayes', clf2),
+    ('Decision Tree', clf3)
+], voting='hard')
+ensemble.fit(X_train, y_train)
+models = [clf1, clf2, clf3]
+model_names = ["Logistic Regression", "Naive Bayes", "Decision Tree"]
+
+for name, model in zip(model_names, models):
+    predictions = model.predict(X_test)
+    accuracy = model.score(X_test, y_test)
+    print(f"{name} predictions: {predictions}")
+    print(f"{name} accuracy: {accuracy:.2f}\n")
+print("Ensemble (Voting Classifier) Accuracy:", ensemble.score(X_test, y_test))
