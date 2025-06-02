@@ -90,3 +90,37 @@ for gen in range(1, GENERATIONS + 1):
 
 best = max(pop, key=fitness)
 print("\nFinal Best individual:", best, "| x =", int(best, 2), "| f(x) =", fitness(best))
+
+
+
+
+
+
+
+#genetic
+import random
+
+def fitness(x):
+    return x**2
+
+def select(pop):
+    return max(random.sample(pop, 2), key=fitness)
+
+def crossover(p1, p2):
+    point = random.randint(1, 4)
+    mask = (1 << point) - 1
+    return (p1 & mask) | (p2 & ~mask)
+
+def mutate(x):
+    if random.random() < 0.3:
+        bit = 1 << random.randint(0, 4)
+        x ^= bit
+    return x
+
+# Initial population (5 random integers from 0 to 31)
+pop = [random.randint(0, 31) for _ in range(5)]
+
+for gen in range(10):
+    pop = [mutate(crossover(select(pop), select(pop))) for _ in pop]
+    best = max(pop, key=fitness)
+    print(f"Gen {gen}: Best x = {best}, f(x) = {fitness(best)}")
