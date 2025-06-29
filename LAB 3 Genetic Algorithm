@@ -124,3 +124,44 @@ for gen in range(10):
     pop = [mutate(crossover(select(pop), select(pop))) for _ in pop]
     best = max(pop, key=fitness)
     print(f"Gen {gen}: Best x = {best}, f(x) = {fitness(best)}")
+
+
+
+
+import random
+
+# Fitness function
+def fitness(x): 
+    return x**2
+
+# Decode binary string to integer
+def decode(chrom): 
+    return int(chrom, 2)
+
+# Create random chromosome
+def random_chrom(): 
+    return ''.join(random.choice('01') for _ in range(5))
+
+# Selection (tournament)
+def select(pop): 
+    return max(random.sample(pop, 2), key=lambda c: fitness(decode(c)))
+
+# Crossover (single point)
+def crossover(p1, p2):
+    point = random.randint(1, 4)
+    return p1[:point] + p2[point:], p2[:point] + p1[point:]
+
+# Mutation (flip bit)
+def mutate(chrom, rate=0.1):
+    return ''.join(b if random.random() > rate else str(1-int(b)) for b in chrom)
+
+# Genetic Algorithm
+pop = [random_chrom() for _ in range(10)]
+for gen in range(20):  # 20 generations
+    pop = [mutate(c) for _ in range(5) for c in crossover(select(pop), select(pop))]
+    best = max(pop, key=lambda c: fitness(decode(c)))
+    print(f"Gen {gen+1:2d}: Best = {decode(best)} (Fitness = {fitness(decode(best))})")
+
+# Final best result
+best = max(pop, key=lambda c: fitness(decode(c)))
+print("Final Best solution:", decode(best), "Fitness:", fitness(decode(best)))
